@@ -11,7 +11,7 @@ public:
 
 	double getColorRed() { return red; }
 	double getColorGreen() { return green; }
-	double getColorBlue() { return blue; }
+	double getColorBlue() { return blue; } 
 	double getColorSpecial() { return special; }
 
 	void setColorRed(double redVal) { red = redVal; }
@@ -23,7 +23,7 @@ public:
 		return (red + green + blue) / 3;
 	}
 	Color colorScalar(double scalar) {
-		// Special color do like surface reflective, shinyness
+		// Special color do like surface reflective, shineness
 		return Color(red * scalar, green * scalar, blue * scalar, special);
 	}
 

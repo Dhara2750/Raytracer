@@ -75,10 +75,8 @@ int winningObjectIndex(vector<double> object_intersections) {
 	}
 }
 
-
 void saveImage(const char *fileName, int width, int height, int dpi, RGBtype *data) {
 	FILE* f;
-	//int 
 	int area = 4 * width * height;
 	int fileSize = 54 + area;
 
@@ -89,21 +87,29 @@ void saveImage(const char *fileName, int width, int height, int dpi, RGBtype *da
 	// PPM -> Pixel Per Meter
 	int ppm = dpi * width;
 	
+	// format of header
+	// http://www.ece.ualberta.ca/~elliott/ee552/studentAppNotes/2003_w/misc/bmp_file_format/bmp_file_format.htm
+
 	unsigned char bmpfileHeader[14] = { 'B','M', 0,0,0,0, 0,0,0,0, 0,0,0,0 };
 	unsigned char bmpInfoHeader[40] = { 40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,24,0 };
 
+	// identify the BMP and DIB BM
+	// 4 bytes that stores size of file
+	// 2 bytes Reserved; actual value depends on the application that creates the image
+	// 2 bytes Reserved; actual value depends on the application that creates the image
+	// 4 bytes starting address, of the byte where the bitmap image data (pixel array) can be found.
 	bmpfileHeader[2] = (unsigned char)(fileSize);
 	bmpfileHeader[3] = (unsigned char)(fileSize>>8);
 	bmpfileHeader[4] = (unsigned char)(fileSize>>16);
 	bmpfileHeader[5] = (unsigned char)(fileSize>>24);
-
-	// Horizontal width of BMPPixel
+	
+	// Horizontal width of BMP in Pixel
 	bmpInfoHeader[4] = (unsigned char)(width);
 	bmpInfoHeader[5] = (unsigned char)(width>>8);
 	bmpInfoHeader[6] = (unsigned char)(width>>16);
 	bmpInfoHeader[7] = (unsigned char)(width>>24);
 
-	// Vertical Height of BMPPixel
+	// Vertical Height of BMP in Pixel
 	bmpInfoHeader[8] = (unsigned char)(height);
 	bmpInfoHeader[9] = (unsigned char)(height>>8);
 	bmpInfoHeader[10] = (unsigned char)(height>>16);
@@ -153,11 +159,11 @@ Color getColorAt(vect intersection_Position, vect intersecting_Ray_Direction, ve
 	vect winning_Object_Normal = scene_objects[index_of_winning_object]->getNormalAt(intersection_Position);
 	Color winning_Object_Color = scene_objects[index_of_winning_object]->getColor();
 
-	// dot
-	// Niche ji special color rakhyo hoy e..
+	// tile pattern
 	if (winning_Object_Color.getColorSpecial() == 2) {
-		int findAvg = (int)intersection_Position.getVectX() + (int)intersection_Position.getVectZ();
-		if (findAvg % 2 == 0) {
+		int square = (int)intersection_Position.getVectX() + (int)intersection_Position.getVectZ();
+		if (square % 2 == 0) {
+			// black
 			winning_Object_Color.setColorRed(0);
 			winning_Object_Color.setColorGreen(0);
 			winning_Object_Color.setColorBlue(0);
@@ -247,7 +253,7 @@ Color getColorAt(vect intersection_Position, vect intersecting_Ray_Direction, ve
 					vect add1 = scalar1.vectAdd(intersecting_Ray_Direction);
 					vect scalar2 = add1.vect_Multiply_Scalar(2);
 					vect add2 = intersecting_Ray_Direction.nagative().vectAdd(scalar2);
-					vect reflection_direction = add2.normalize();*/
+					vect reflection_direction = add2.normalize();*/,
 
 					/*c1 = -dot_product(N, V)
 						Rl = V + (2 * N * (-n*v))*/
@@ -335,8 +341,10 @@ int main() {
 	vect _O(0, 0, 0);
 
 	// defining direction of camera
-	vect camPos(3, 1.5, -4); // arbitory setting
+	vect camPos(3, 1.5, -4); // arbitory setting of camera
+
 	// same karu to badhi baju image sarki felay
+
 	// 0,0,0 to render j na thay 
 	// 5,5,5 -> small small thatu jay -> 0,20,20 sm -> 0,50,50 sm sm -> 0, 100,100 sm sm sm -> full bk
 	// 50,50,0 -> full bk -> small as sm sm
@@ -344,10 +352,10 @@ int main() {
 	// -5,-5,-5 -> bahar nu background j dekhay
 
 	vect look_At(0, 0, 0);
+
 	//displaced camera positions are taken in the plane perpendicular to the camera view direction.
 	// Forward Vector
 	vect diff_BTW(camPos.getVectX() - look_At.getVectX(), camPos.getVectY() - look_At.getVectY(), camPos.getVectZ() - look_At.getVectZ());
-
 	vect camDir = diff_BTW.nagative().normalize();
 
 	// Forward * y
@@ -355,6 +363,9 @@ int main() {
 
 	// Right * forword
 	vect camDown = camRight.cross_Product(camDir);
+
+	// camright, camdown used to define general coordinate system 
+	// also used in method function which is in vector in order to compute our perspective	
 
 	Camera scene_Cam(camPos, camDir, camRight, camDown);
 	// We have Raytracer, models camera with OBJ programming
@@ -368,20 +379,27 @@ int main() {
 	Color tile_Color(1,1,1, 2);
 	Color orange(.1,.9,1, 0);
 
+	// setting of light_Position
 	vect light_Position(-7, 10, -10);	
+	
+	// vector, color
 	Light scene_Light(light_Position, white_light);  
-	vector<Source*> light_Sources;
+	
+	vector<Source*> light_Sources; 
 	light_Sources.push_back(dynamic_cast<Source*>(&scene_Light));
 	
 	// Scene Objects
 	Sphere scene_Sphere(_O, 1, pretty_green);
-	// _Y normal deneka
+	
+	// _Y normal deneka -> center, radius, color
 	Plane scene_Plane(_Y, -1, tile_Color);
 	vect new_Sphere_location(1.2, -.5, 0.5);
 	Sphere scene_Sphere2(new_Sphere_location, 0.5, marron);
 	Triangle scene_Triangle(vect(2, 0, 0), vect(0, 2, 0), vect(0, 0, 10), orange);
 
+	// proportion between width : height
 	double aspectratio = (double)width / (double)height;
+	
 	vector<Object*> scene_objects;	
 	scene_objects.push_back(dynamic_cast<Object*>(&scene_Sphere));
 	scene_objects.push_back(dynamic_cast<Object*>(&scene_Plane));
@@ -390,10 +408,14 @@ int main() {
 
 	makeCube(vect(2,0.6,.6), vect(2.5,1.2,1.2), orange, scene_objects);
 
+	// slightly to right and slightly to left from our camera
 	double xamt = 0, yamt = 0;	
-	double accuracy = .00000001;
+
+	// we will ensure that intersection value must be out side of sphere
+	double accuracy = .000001;
 	// Light jo zyda padegi to image light hogi
 	// light kam to image dark
+
 	double ambient_Light = 0.2;
 
 	const int depth = 1; // depth[1] -> if 2 send 4 new ray from a 1 pixel & depth[0] -> what's write now n so on
@@ -404,11 +426,14 @@ int main() {
 			// Going Through Every Pixel in Image
 			int foreach = j * width + i;
 
-			// Anti Aliasing
+			// Anti Aliasing techniques 
+			// avaraging color of our multiple pixel within another image place behind our first image plane
+			// super sampling, area sampling, masking
 			double aa_Red[depth * depth];
 			double aa_Green[depth * depth];
 			double aa_Blue[depth * depth];
 
+			// i am passing multiple ray to pixels 
 			for (int x = 0; x < depth; ++x) {
 				for (int y = 0; y < depth; ++y) {
 
@@ -460,6 +485,7 @@ int main() {
 
 					vector<double> intersections;
 
+					// Ray which I have created is intersect with object which is in our scene
 					for (int index = 0; index < (int)scene_objects.size(); index++) {
 						// cout << scene_objects[index]->findIntersection(cam_ray) << " ";
 						intersections.push_back(scene_objects.at(index)->findIntersection(cam_ray));
@@ -467,7 +493,7 @@ int main() {
 
 					/*if (i == 0 && j == 0) {
 						cout << intersections.size() << endl;
-						copy(intersections.begin(), intersections.end(), ostream_iterator<double>(cout, " "));
+						copy(interections.begin(), intersections.end(), ostream_iterator<double>(cout, " "));
 						cout << "\n";
 					}*/
 
@@ -475,7 +501,12 @@ int main() {
 						cout << intersections[i] << endl;
 					}*/
 
+					// check which object is near to camera
 					int index_of_winning_object = winningObjectIndex(intersections);
+
+					// determine shadows at each point
+					// find intersection go to light source
+					// if we find any object btw intersection and light source than we have shadow
 
 					// cout << index_of_winning_object;
 					// Instead of color to object we color to intersecting point
@@ -491,7 +522,8 @@ int main() {
 							// position, direction
 
 							vect intersection_Position = cam_ray_origin.vectAdd(cam_ray_direction.vect_Multiply_Scalar(intersections[index_of_winning_object]));
-							vect intersecting_Ray_Direction = cam_ray_direction; // direction of intersecting ray is where ray is coming from -> so it is coming from camera
+							vect intersecting_Ray_Direction = cam_ray_direction; 
+							// direction of intersecting ray is where ray is coming from -> so it is coming from camera
 
 							//Reflection hoy to bija badha point ke jythi aave e b jovanu
 							// Shadows, reflection, shyniness, spectral intensity

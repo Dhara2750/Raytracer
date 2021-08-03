@@ -20,9 +20,9 @@ Ray::Ray() {
 	direction = vect(1, 0, 0);
 }
 
-Ray::Ray(vect o, vect d) {
-	origin = o;
-	direction = d;
+Ray::Ray(vect origin, vect direction) {
+	this->origin = origin;
+	this->direction = direction;
 }
 
 #endif // !RAY_H

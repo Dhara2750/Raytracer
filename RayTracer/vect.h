@@ -47,10 +47,10 @@ vect::vect() {
 	z = 0;
 }
 
-vect::vect(double a, double b, double c) {
-	x = a;
-	y = b;
-	z = c;
+vect::vect(double x, double y, double z) {
+	this->x = x;
+	this->y = y;
+	this->z = z;
 }
 
 #endif // !VECT_H

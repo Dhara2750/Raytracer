@@ -43,7 +43,6 @@ public:
 };
 
 Plane::Plane() {
-	// 5th Lec
 	// y -> left, right
 	// z -> depth of our scene
 	normal = vect(1, 0, 0);
@@ -51,10 +50,10 @@ Plane::Plane() {
 	color = Color(0.5, 0.5, 0.5, 0);
 }
 
-Plane::Plane(vect n, double d, Color c) {
-	normal = n;
-	distance = d;
-	color = c;
+Plane::Plane(vect normal, double distance, Color color) {
+	this->normal = normal;
+	this->distance = distance;
+	this->color = color;
 }
 
 #endif // !PLANE_H

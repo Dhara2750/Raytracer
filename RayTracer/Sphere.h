@@ -23,7 +23,7 @@ public:
 		return normal_Vect;
 	}
 
-	// When ray comes to spehre
+	// When ray comes to sphere
 	double findIntersection(Ray ray) {
 		vect ray_origin = ray.getRayOrigin();
 		double ray_origin_x = ray_origin.getVectX();

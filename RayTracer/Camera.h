@@ -24,11 +24,11 @@ Camera::Camera() {
 	camDown = vect(0, 0, 0);
 }
 
-Camera::Camera(vect pos, vect dir, vect right, vect down) {
-	camPos = pos;
-	camDir = dir;
-	camRight = right;
-	camDown = down;
+Camera::Camera(vect camPos, vect camDir, vect camRight, vect camDown) {
+	this->camPos = camPos;
+	this->camDir = camDir;
+	this->camRight = camRight;
+	this->camDown = camDown;
 }
 
 #endif // !CAMERA_H
